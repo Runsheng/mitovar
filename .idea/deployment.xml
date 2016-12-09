@@ -5,7 +5,7 @@
       <paths name="b920">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/mitovar" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

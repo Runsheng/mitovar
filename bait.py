@@ -4,41 +4,49 @@
 # @Author  : Runsheng     
 # @File    : bait.py
 
+"""
+functions used to bait the reads from mitochondrial out
+"""
+
 from utils import myexe
 import os
 import pysam
+
 
 def bwa_index_wrapper(ref_file):
     """
     :param ref_file:
     :return:
     """
-    cmd_index="bwa index {ref}".format(ref_file)
+    cmd_index="bwa index {ref}".format(ref=ref_file)
+    myexe(cmd_index)
     return ref_file
 
 
-def sra2fq_wrapper(srafile, outdir):
+def sra2fq_wrapper(sra_file, outdir):
 
-    sra_cmd = "fastq-dump --split-files {} --outdir {}".format(srafile, outdir)
+    sra_cmd = "fastq-dump --split-files {} --outdir {}".format(sra_file, outdir)
+    print(sra_cmd)
+    myexe(sra_cmd)
 
-    os.list(outdir)
+
+    return outdir
 
 
-def bwa_mem_wrapper(ref_file, fastq_f, fastq_r, core=25, min_seed_length=18, band_width=2000, out="mapped.bam"):
+def bwa_mem_wrapper(ref_file, fq_str, core=25, min_seed_length=18, band_width=2000, out="mapped.bam"):
     """
     a bwa mem mapper only collect the mapped reads
     :param ref_file:
-    :param fastq_f:
-    :param fastq_r:
+    :param fq_str: a list contains the name of the sra -extracted
     :param core, min_seed_length and band_width is bwa mem parameter -t, -k and -w, respectively
     :return: the out bam file
     """
 
-    cmd_bwa="bwa mem -k {band} --w {width} -t {core} {ref} \
-        {fastq_f} {fastq_r} \
+    cmd_bwa="bwa mem -k {band} -w {width} -t {core} {ref} \
+        {fq_str} \
         | samtools view -F 4  -b -o {out}".format(
         band=min_seed_length, width=band_width, core=core,ref=ref_file,
-        fastq_f=fastq_f, fastq_r=fastq_r,
+        fq_str=fq_str,
         out=out)
     print(cmd_bwa)
     myexe(cmd_bwa)
@@ -51,8 +59,8 @@ def sort_index_wrapper(bamfile, core=1, bam_sorted=None):
     else:
         pass
 
-    sort_cmd="samtools sort bamfile -@ {core} -o {bam_sorted}".format(
-        core=core, bam_sorted=bam_sorted)
+    sort_cmd="samtools sort {bamfile} -@ {core} -o {bam_sorted}".format(
+        bamfile=bamfile, core=core, bam_sorted=bam_sorted)
     index_cmd="samtools index {bam_sorted}".format(bam_sorted=bam_sorted)
 
     myexe(sort_cmd)
@@ -61,6 +69,11 @@ def sort_index_wrapper(bamfile, core=1, bam_sorted=None):
 
 
 def get_name(bam_sorted):
+    """
+    from the bam file get the mapped read name
+    :param bam_sorted:
+    :return:
+    """
 
     samfile=pysam.AlignmentFile(bam_sorted, "rb")
     names_set=set()

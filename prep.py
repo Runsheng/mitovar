@@ -4,6 +4,12 @@
 # @Author  : Runsheng     
 # @File    : prep.py
 
+import os
+import shutil
+from Bio import SeqIO
+
+from glob import glob
+
 
 def check_depend():
     """
@@ -11,3 +17,33 @@ def check_depend():
     :return:
     """
     pass
+
+
+def fasta_shuffle(ref_file, out_file, file_type="fasta"):
+
+    ref_dict=SeqIO.to_dict(SeqIO.parse(ref_file, file_type))
+
+    fw=open(out_file, "w")
+
+    for k,v in ref_dict.iteritems():
+
+        if "shuffled" in k:
+            fw.write(">" + k + "\n")
+            fw.write(str(v.seq))
+            fw.write("\n")
+        else:
+            v_str=str(v.seq)
+            v_new=v_str[len(v)/2:]+v_str[:len(v)/2]
+            k_new=str(k)+"_shuffled"
+
+            fw.write(">"+k+"\n")
+            fw.write(v_str)
+            fw.write("\n")
+
+            fw.write(">"+k_new+"\n")
+            fw.write(v_new)
+            fw.write("\n")
+
+    fw.close()
+
+    return out_file
