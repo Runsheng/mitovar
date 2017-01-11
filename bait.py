@@ -11,6 +11,7 @@ functions used to bait the reads from mitochondrial out
 from utils import myexe
 import os
 import pysam
+from glob import glob
 
 
 def bwa_index_wrapper(ref_file):
@@ -27,13 +28,32 @@ def sra2fq_wrapper(sra_file, outdir):
 
     sra_cmd = "fastq-dump --split-files {} --outdir {}".format(sra_file, outdir)
     print(sra_cmd)
-    myexe(sra_cmd)
-
+    print(myexe(sra_cmd))
 
     return outdir
 
 
-def bwa_mem_wrapper(ref_file, fq_str, core=25, min_seed_length=18, band_width=2000, out="mapped.bam"):
+def get_fq_dict(workdir_fastq):
+    """
+    :param workdir_fastq:
+    :return: a dict with {"ERRxxxx": ["ERRxxxx_1.fq","ERRxxxx_2.fq"], "ERRxxx2":["ERRxxx2_1.fq"]}
+    """
+    fq_dict={}
+    os.chdir(workdir_fastq)
+    fq_names=glob("*.fq")+glob("*.fastq")
+    for name in fq_names:
+        if ".fq" or ".fastq" in name:
+            prefix=name.split("_")[0]
+            name_abs=os.path.join(workdir_fastq, name)
+            try:
+                fq_dict[prefix].append(name_abs)
+            except KeyError:
+                fq_dict[prefix]=[]
+                fq_dict[prefix].append(name_abs)
+    return fq_dict
+
+
+def bwa_mem_wrapper(ref_file, fq_str, core=25, min_seed_length=20, band_width=2000, out="mapped.bam"):
     """
     a bwa mem mapper only collect the mapped reads
     :param ref_file:

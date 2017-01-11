@@ -7,7 +7,7 @@
 import os
 import shutil
 from Bio import SeqIO
-
+from utils import myexe
 from glob import glob
 
 
@@ -25,9 +25,14 @@ def fasta_shuffle(ref_file, out_file, file_type="fasta"):
 
     fw=open(out_file, "w")
 
+    k_used_set=set()
+    for k in ref_dict.keys():
+        if "shuffled" in k:
+            k_used_set.add(k.replace("_shuffled", ""))
+
     for k,v in ref_dict.iteritems():
 
-        if "shuffled" in k:
+        if "shuffled" in k or k in k_used_set:
             fw.write(">" + k + "\n")
             fw.write(str(v.seq))
             fw.write("\n")
@@ -47,3 +52,7 @@ def fasta_shuffle(ref_file, out_file, file_type="fasta"):
     fw.close()
 
     return out_file
+
+
+if __name__=="__main__":
+    pass
