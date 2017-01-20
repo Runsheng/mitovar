@@ -120,6 +120,24 @@ def flow_chain_sra_scaf(spe, sra_list, ref_file, work_dir_root, sra_dir="", core
     return scaf_fasta, scaf_fastg
 
 
+def flow_chain_fq_first(spe, ref_file, work_dir_root, sra_dir="", core=16, i=0):
+
+    work_dir_spe=os.path.join(work_dir_root, spe)
+    if os.path.exists(work_dir_spe):
+        print("Already have the dirs.")
+        pass
+    else:
+        os.makedirs(work_dir_spe)
+    workdir_fastq=os.path.join(work_dir_spe, "fastq")
+
+    fq_dict=get_fq_dict(workdir_fastq)
+
+    fq_out_dict=flow_bait(i, work_dir_spe, fq_dict, ref_file, core=core)
+    scaf_fasta, scaf_fastg=spades_wrapper(fq_name_dict=fq_out_dict, core=core, outdir="spades_out")
+    return scaf_fasta, scaf_fastg
+
+
+
 def pre_ref_first(store_dir, ref_file=None):
     """
     only used for round0

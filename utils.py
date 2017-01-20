@@ -9,6 +9,7 @@ import sys
 import signal
 import os
 import fnmatch
+import multiprocessing
 
 from Bio import SeqIO
 
@@ -27,8 +28,8 @@ def myexe(cmd, timeout=0):
     proc=subprocess.Popen(cmd, shell=True, preexec_fn=setupAlarm,
                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd=os.getcwd())
     out, err=proc.communicate()
-    print err
-    return out, err, proc.returncode
+    print err, "Run finished with return code:", proc.returncode
+    return out
 
 
 def fasta2dic(fastafile):
@@ -85,3 +86,44 @@ def myglob(seqdir, word):
          for filename in fnmatch.filter(filenames, word):
             matches.append(os.path.join(root, filename))
     return matches
+
+def parmap(f, X, nprocs=multiprocessing.cpu_count()):
+    """
+    a function to use mutip map inside a function
+    modified from stackoverflow, 3288595
+    :param f:
+    :param X:
+    :param nprocs: core, if not given, use all core
+    :return:
+    """
+    q_in = multiprocessing.Queue(1)
+    q_out = multiprocessing.Queue()
+
+    proc = [multiprocessing.Process(target=fun, args=(f, q_in, q_out))
+            for _ in range(nprocs)]
+    for p in proc:
+        p.daemon = True
+        p.start()
+
+    sent = [q_in.put((i, x)) for i, x in enumerate(X)]
+    [q_in.put((None, None)) for _ in range(nprocs)]
+    res = [q_out.get() for _ in range(len(sent))]
+
+    [p.join() for p in proc]
+
+    return [x for i, x in sorted(res)]
+
+
+def fun(f, q_in, q_out):
+    """
+    for parmap
+    :param f:
+    :param q_in:
+    :param q_out:
+    :return:
+    """
+    while True:
+        i, x = q_in.get()
+        if i is None:
+            break
+        q_out.put((i, f(x)))

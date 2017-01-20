@@ -9,7 +9,6 @@ The pipelines used after a round's baiting-assembly is finished
 Have to chose the reference from the scaffolds.fasta to generate new reference
 
 """
-
 from utils import fasta2dic
 
 
