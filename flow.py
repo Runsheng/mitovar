@@ -21,6 +21,7 @@ from assembler import spades_wrapper
 from anno import exonerate_parser_write, exonerate_wrapper
 from post import scaf_filter
 
+
 def flow_bait(i, work_dir, fq_dict, ref_file, core=16):
     """
     The flow for baiting,
@@ -158,7 +159,7 @@ def pre_ref_first(store_dir, ref_file=None):
     return ref_name
 
 
-def pre_ref_next(i, work_dir_spe):
+def pre_ref_next(i, work_dir_spe, out=None):
     """
     join the reference from the last time and this time's scaffold together
     expect a dir str like:
@@ -192,7 +193,11 @@ def pre_ref_next(i, work_dir_spe):
         print("Using mixed old-new reference!")
         ref_new_d.update(ref_old_d)
 
-    out=os.path.join(work_dir_round, "ref_next.fasta")
+    if out is None:
+        out=os.path.join(work_dir_round, "ref_next.fasta")
+    else:
+        pass
+
     dic2fasta(ref_new_d, out)
 
     return out

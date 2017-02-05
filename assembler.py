@@ -3,7 +3,10 @@
 # @Time    : 2016/12/9 12:09
 # @Author  : Runsheng     
 # @File    : assembler.py
-
+"""
+The assembler wrapper for spades.py
+todo: add support for >10 libraries
+"""
 from utils import myexe
 import os
 
@@ -40,7 +43,7 @@ def spades_wrapper(fq_name_dict, outdir="spades_out", core=12):
         lib_num+=1
         fq_str=" ".join(fq_str_list)
 
-    spades_cmd="spades.py --careful -t {core} {readpool} -o {outdir}".format(
+    spades_cmd="spades.py --only-assembler -t {core} {readpool} -o {outdir}".format(
                     core=core, readpool=fq_str, outdir=outdir)
     print(spades_cmd)
     print(myexe(spades_cmd))

@@ -11,7 +11,13 @@ Get the annotation for CDS and proteins, store as .tbl file, used for tbl2asn su
 Write the CDS and protein sequence out as fasta file, together with the orthology table, used for tree construction.
 """
 from utils import fasta2dic, chr_select, myexe, dic2fasta
-from Bio import SearchIO, SeqIO, SeqUtils
+
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from Bio import SearchIO, SeqIO, SeqUtils
+
+
 import os
 try:
     from cStringIO import StringIO
@@ -218,7 +224,6 @@ def cds_tbl_get(query, target, outfile=False, geneticcode=5):
     return tbl_cds
 
 
-
 def get_cogfile(fastafile, wkdir=None, out="m20.txt"):
     """
     cat all the cds/or protein together, and get the cog file used for ete alignment
@@ -251,7 +256,7 @@ def get_cogfile(fastafile, wkdir=None, out="m20.txt"):
 
 
 #################### trna part
-def mitfi_wrapper_trna(fastafile, MITFIPATH=None):
+def mitfi_wrapper_trna(fastafile, MITFIPATH=None, prefix=None):
     """
     mitfi.jar in in $MITFIPATH=./bins
     :return:teh filename of mitfi run
@@ -266,8 +271,9 @@ def mitfi_wrapper_trna(fastafile, MITFIPATH=None):
         jarfile=jarfile, fastafile=fastafile)
     trna_out=myexe(mitfi_cmd)
 
-    print trna_out
-    prefix=fastafile.split("/")[-1].split(".")[0]
+    print(trna_out)
+    if prefix is None:
+        prefix=".".join(fastafile.split("/")[-1].split(".")[0:-1])
     with open(prefix+"_trna.txt", "w") as fw:
         fw.write(trna_out)
 
@@ -450,10 +456,9 @@ def re_order(fastafile,newstart,strand="+",outfasta=None):
     return outfasta
 
 
+def flow_re_order(fastafile, MITFIPATH=None, outfasta=None):
 
 
-
-def re_order_flow(fastafile,MITFIPATH=None,outfasta=None):
     mitfi_out=mitfi_wrapper_trna(fastafile, MITFIPATH)
     newstart, strand=get_tnra_pro(fastafile, mitfi_out)
     outfasta=re_order(fastafile, newstart, strand, outfasta)
@@ -461,66 +466,78 @@ def re_order_flow(fastafile,MITFIPATH=None,outfasta=None):
     return outfasta
 
 
+#### flow for tbl generation
+def pre_fsa(fastafile, spe_name=None, out=None):
+    """
+    The species name should be provided in the running or
+    just rename the fastafile to contain the species name
+
+    prepare the fsa file for the tbl2asn prog
+    the fsa file should:
+        - have the header line contains the spe information
+        - end with ".fsa"
+    :param fastafile:
+    :param spe_name:
+    :param out:
+    :return:
+    """
+    fa_d=fasta2dic(fastafile)
+    if spe_name is None:
+        spe_name= fastafile.split(".")[0]
+    if out is None:
+        out = spe_name + ".fsa"
+    fastaname=spe_name.replace(" ", "_") # in case the species name contains space
+
+    # give a mtDNA header line for the fsa file, ready for the submission
+    header=">{fastaname} [organism={spe_name}] [chromosome=mt] [moltype=genomic DNA] " \
+           "[gcode=5] [Topology=Circular] [Completedness=Complete] " \
+           "{spe_name} mitochondrion, complete genome.".format(
+        fastaname=fastaname,spe_name=spe_name)
+
+    with open(out, "w") as fw:
+        fw.write(header)
+        fw.write("\n")
+        fw.write(str(fa_d.values()[0].seq))
+        fw.write("\n")
+
+    return out
+
+
+def flow_tbl(fasta_order, cds_ref, r_ref, spe_name=None,MITFIPATH=None):
+    #r_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
+    #cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
+
+    #fasta_order=flow_re_order(fastafile, MITFIPATH=MITFIPATH)
+    prefix=".".join(fasta_order.split(".")[0:-1])
+
+    if spe_name is None:
+        spe_name=prefix
+
+    trnafile=mitfi_wrapper_trna(fasta_order, MITFIPATH, prefix=prefix)
+    bed4_trna=trnafile_parser(trnafile)
+    bed4_rrna=rrna_tbl_get(fasta_order, r_ref)
+    bed4_cds=cds_tbl_get(fasta_order, cds_ref)
+    tbl_out=tbl_format(bed4_rrna, bed4_cds, bed4_trna)
+
+
+    fsa_name=pre_fsa(fasta_order, spe_name)
+
+    headstr=">Feature\t"+fsa_name+"\n"
+    tbl_out=[headstr]+tbl_out
+    tbl_name=spe_name+".tbl"
+
+    with open(tbl_name, "w") as fw:
+        fw.write("".join(tbl_out))
+
+    print("Using {fsa_name} and {tbl_name} for your tbl2asn submission.".format(
+        fsa_name=fsa_name, tbl_name=tbl_name
+    ))
+
+    return fsa_name, tbl_name
+
 if __name__=="__main__":
-
-    def test_flowexon():
-        from glob import glob
-        import os
-        wkdir="/home/zhaolab1/data/mitosra/dna/anno/exon"
-        os.chdir(wkdir)
-        target="./ref/celmt_p.fasta"
-        query_list=glob("*_s.fasta")
-        print(query_list)
-        for query in query_list:
-            print query
-            flow_exon(query, target)
-        myexe("""
-        cat *_p_corr.fasta> m20_p.fasta
-        cat *_cds_corr.fasta >m20_cds.fasta
-        """)
-
-    def test_corr():
-        wkdir="/home/zhaolab1/data/mitosra/dna/anno/exon/round0"
-        os.chdir(wkdir)
-        _exon_corrector("281687_s_cds.fa", "281687_s_p.fa")
-
-    #test_flowexon()
-    def test_cog():
-        get_cogfile("m20_p.fasta")
-
-    def test_genbank_parser():
-        wkdir="/home/zhaolab1/data/mitosra/dna/anno/exon"
-        os.chdir(wkdir)
-
-    def test_miftf():
-        wkdir="/home/zhaolab1/data/mitosra/dna/anno/exon"
-        os.chdir(wkdir)
-        print mitfi_wrapper_trna("/home/zhaolab1/myapp/mitovar/bins/mitfi/test/celmt_re.fasta")
-
-    def test_reorder():
-        wkdir="/home/zhaolab1/data/mitosra/dna/anno/exon"
-        os.chdir(wkdir)
-        re_order("/home/zhaolab1/myapp/mitovar/bins/mitfi/test/celmt_re.fasta", 13794, "-")
-        # the re_order need to be same as org fasta file
-
-    def test_getpro():
-        print get_tnra_pro("/home/zhaolab1/myapp/mitovar/bins/mitfi/test/celmt_re.fasta",
-                           "/home/zhaolab1/myapp/mitovar/celmt_re_trna.txt")
-
-    def test_re_flow():
-        from pprint import pprint
-        wkdir = "/home/zhaolab1/data/mitosra/dna/anno/trna"
-        os.chdir(wkdir)
-        from glob import glob
-        from utils import parmap
-        #files=glob("*_s.fasta")
-        #parmap(re_order_flow, files, 32)
-        files=glob("*_ordered.fasta")
-        #parmap(mitfi_wrapper_trna, files, 32)
-        r_ref="/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
-        cds_ref="/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
-        for i in files:
-            pprint(rrna_tbl_get(i, r_ref))
-            pprint(cds_tbl_get(i, cds_ref) )
-
-
+    os.chdir("/home/zhaolab1/data/mitosra/dna/wkdir/1094320/round0")
+    r_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
+    cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
+    out=flow_re_order("1094320.fasta")
+    flow_tbl(out, cds_ref, r_ref, spe_name="Caenorhabditis sp.1")

@@ -39,17 +39,11 @@ def run_single():
     work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir"
     #dir_list=['281687', '1561998', '1729975', '1094327', '1094328', '31234',
     #         '1094335', '497829', '1094320', '1094321', '1094326', '135651', '860376']
-    dir_list=['860376']
+    dir_list=['281687']
     ref_file = "/home/zhaolab1/data/mitosra/dna/ref/merge.fasta"
     for spe in dir_list:
-        work_dir_spe_root=os.path.join(work_dir_root, spe)
-        os.chdir(work_dir_spe_root)
-        fq_dict={"all":["/home/zhaolab1/data/mitosra/dna/wkdir/{}/all.fastq".format(spe)]}
-        fq_out_dict=flow_bait(0, work_dir=work_dir_spe_root, fq_dict=fq_dict, ref_file=ref_file)
+        flow_chain_fq_first(spe, ref_file, work_dir_root, core=32)
 
-        work_dir_round="/home/zhaolab1/data/mitosra/dna/wkdir/{}/round0".format(spe)
-        os.chdir(work_dir_round)
-        spades_wrapper(fq_name_dict=fq_out_dict, core=32, outdir="spades_out_onlyas")
 
 def test_pre_fastq():
     """
@@ -58,7 +52,6 @@ def test_pre_fastq():
     """
     sralist=['SRR1056292', 'SRR1056294', 'SRR1056295', 'SRR1056293', 'SRR275642']
     work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir/31234"
-
     flow_pre_fastq(sralist, work_dir_root)
 
 
@@ -69,7 +62,6 @@ def test_as_one():
         work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir/"
         ref_file = "/home/zhaolab1/data/mitosra/dna/ref/merge.fasta"
         print flow_chain_fq_first(spe, ref_file, work_dir_root, sra_dir="", core=32, i=0)
-
 
 
 def test_half():
@@ -89,6 +81,7 @@ def test_half():
     for spe, sra_list in dict_half.iteritems():
         print(flow_chain_sra_scaf(spe, sra_list, ref_file, work_dir_root, sra_dir, core=16))
 
+
 def test_round1():
     pass
 
@@ -101,13 +94,22 @@ def flow_round0_all():
     target="./ref/celmt_p.fasta"
     query_list=glob("*.fasta")
 
-
     for query in query_list:
         print query
         flow_exon(query, target)
 
+from post import post_mapping
+
+def test_post_mapping():
+    dir_list =['860376', '1729975', '1094326', '1502938',
+               '281681', '1094328', '1094335', '1094320',
+               '1094321', '1094331', '1094327']
+    for taxid in dir_list:
+        ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/{taxid}.fasta".format(taxid=taxid)
+        work_dir_spe="/home/zhaolab1/data/mitosra/rnaother/{taxid}".format(taxid=taxid)
+        print post_mapping(work_dir_spe, ref_file, core=40)
 
 
 if __name__=="__main__":
-    test_as_one()
+    test_post_mapping()
     # note 86 should have another round to finish
