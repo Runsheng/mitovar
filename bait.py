@@ -40,7 +40,7 @@ def get_fq_dict(workdir_fastq):
     """
     fq_dict={}
     os.chdir(workdir_fastq)
-    fq_names=glob("*.fq")+glob("*.fastq")
+    fq_names=glob("*.fq*")+glob("*.fastq*")
     for name in fq_names:
         if ".fq" or ".fastq" in name:
             prefix=name.split("_")[0]

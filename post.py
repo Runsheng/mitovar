@@ -72,10 +72,12 @@ def flow_mapping(work_dir, fq_dict, ref_file, core=16):
     bwa_index_wrapper(ref_file)
 
     bam_list=[]
-    for k, v in fq_dict.iteritems():
+    for k, v in fq_dict.items():
         fq_str = " ".join(v)
         out_bam = os.path.join(work_dir, k + ".bam")
-        bwa_mem_wrapper(ref_file, fq_str, core=core, min_seed_length=20, band_width=2000, out=out_bam)
+        bwa_mem_wrapper(ref_file, fq_str,
+                              core=core, min_seed_length=20,
+                              band_width=2000, out=out_bam)
         bam_sorted=sort_index_wrapper(out_bam)
         bam_list.append(bam_sorted)
 
@@ -88,21 +90,22 @@ def wrapper_samtools_merge(ref_file, bam_list, out=None):
 
     merge_cmd="samtools merge {out_bam} {in_bam}".format(
         out_bam=out, in_bam=" ".join(bam_list))
-    print merge_cmd
+    print(merge_cmd)
     myexe(merge_cmd)
 
     return sort_index_wrapper(out)
 
 
-def post_mapping(work_dir_spe, ref_file, core=32 , out=None):
+def post_mapping(work_dir, fq_dir, ref_file, core=32 , out=None):
     """
     bwa mapping and merge all sam files for a spe
     :return:
     """
-    work_dir_fq=os.path.join(work_dir_spe, "fastq")
-    fq_dict=get_fq_dict(work_dir_fq)
+    os.chdir(work_dir)
+    fq_dict=get_fq_dict(fq_dir)
+    print "The fq contains:", fq_dict
 
-    bam_list=flow_mapping(work_dir_spe, fq_dict, ref_file, core)
+    bam_list=flow_mapping(work_dir, fq_dict, ref_file, core)
 
     out=wrapper_samtools_merge(ref_file, bam_list, out)
     return out

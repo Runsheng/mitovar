@@ -107,9 +107,22 @@ def test_post_mapping():
     for taxid in dir_list:
         ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/{taxid}.fasta".format(taxid=taxid)
         work_dir_spe="/home/zhaolab1/data/mitosra/rnaother/{taxid}".format(taxid=taxid)
-        print post_mapping(work_dir_spe, ref_file, core=40)
+        fq_dir=work_dir_spe+"/fastq"
+        print post_mapping(work_dir_spe, fq_dir, ref_file, core=40)
+
+def run_cbr_mapping():
+    fqdir="/home/zhaolab1/data/mitosra/rna/cbr_cni/read/briggsae_male/fastq/"
+    ref_file="/home/zhaolab1/data/mitosra/rna/cbr_cni/ref/cbrmt.fa"
+    wkdir="/home/zhaolab1/data/mitosra/rna/cbr_cni"
+    print post_mapping(work_dir=wkdir, fq_dir=fqdir, ref_file=ref_file, core=40)
+
+def run_cni_mapping():
+    fqdir="/home/zhaolab1/data/mitosra/rna/cbr_cni/read/nigoni_male/fastq/"
+    ref_file="/home/zhaolab1/data/mitosra/rna/cbr_cni/ref/cnimt.fa"
+    wkdir="/home/zhaolab1/data/mitosra/rna/cbr_cni"
+    print post_mapping(work_dir=wkdir, fq_dir=fqdir, ref_file=ref_file, core=40)
 
 
 if __name__=="__main__":
-    test_post_mapping()
+    run_cni_mapping()
     # note 86 should have another round to finish
