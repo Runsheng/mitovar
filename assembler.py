@@ -11,7 +11,7 @@ from utils import myexe
 import os
 
 
-def spades_wrapper(fq_name_dict, outdir="spades_out", core=12):
+def spades_wrapper(fq_name_dict, outdir="spades_out", core=12, rna_model=False):
 
     """
     :param fq_name_dict: a dict with {"pe1-1": "ERRxxxx_1_s.fq","pe1-2": "ERRxxxx_1_s.fq", "s2":"ERRxxxx_1.fq"}
@@ -43,8 +43,9 @@ def spades_wrapper(fq_name_dict, outdir="spades_out", core=12):
         lib_num+=1
         fq_str=" ".join(fq_str_list)
 
-    spades_cmd="spades.py --only-assembler -t {core} {readpool} -o {outdir}".format(
-                    core=core, readpool=fq_str, outdir=outdir)
+    spades_bin="rnaspades.py" if rna_model else "spades.py"
+    spades_cmd="{spades_bin} --only-assembler -t {core} {readpool} -o {outdir}".format(
+                    spades_bin=spades_bin, core=core, readpool=fq_str, outdir=outdir)
     print(spades_cmd)
     print(myexe(spades_cmd))
 

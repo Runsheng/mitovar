@@ -5,7 +5,8 @@
 # @File    : flow.py
 
 """
-Create a flow for series of NCBI SRA data
+The mtDNA assembly flow for series of NCBI SRA data/fastq data
+Warning: Flows contain the change of current workdir
 """
 # standard library import
 import os

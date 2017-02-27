@@ -84,9 +84,10 @@ def flow_mapping(work_dir, fq_dict, ref_file, core=16):
     return bam_list
 
 
-def wrapper_samtools_merge(ref_file, bam_list, out=None):
+def wrapper_samtools_merge(work_dir, ref_file, bam_list, out=None):
     if out is None:
-        out=ref_file.split(".")[0]+".bam"
+        out_s=ref_file.split("/")[-1].split(".")[0]+".bam"
+        out=os.path.join(work_dir, out_s)
 
     merge_cmd="samtools merge {out_bam} {in_bam}".format(
         out_bam=out, in_bam=" ".join(bam_list))
@@ -111,11 +112,27 @@ def post_mapping(work_dir, fq_dir, ref_file, core=32 , out=None):
     return out
 
 
-
-if __name__=="__main__":
+########## temp function used to run and test
+def __test_mapping():
     dir_list = ['281687', '1561998', '1729975', '1094327', '1094328',
                 '1094335', '1094320', '1094321', '1094326', '135651', '860376']
+
     for taxid in dir_list:
-        ref_file="/home/zhaolab1/data/mitosra/dna/ref_post/{taxid}_s_ordered.fsa".format(taxid=taxid)
-        work_dir_spe="/home/zhaolab1/data/mitosra/dna/wkdir/{taxid}".format(taxid=taxid)
+        ref_file = "/home/zhaolab1/data/mitosra/dna/ref_post/{taxid}_s_ordered.fsa".format(taxid=taxid)
+        work_dir_spe = "/home/zhaolab1/data/mitosra/dna/wkdir/{taxid}".format(taxid=taxid)
         print post_mapping(work_dir_spe, ref_file, core=40)
+
+
+def __test_rna():
+    work_dir="/home/zhaolab1/data/mitosra/rna/brenneri_males_cb2012/"
+    fq_dir="/home/zhaolab1/data/mitosra/rna/brenneri_males_cb2012/fastq"
+    ref_file="/home/zhaolab1/data/mitosra/dna/ref_post/135651_s_ordered.fsa"
+    #print post_mapping(work_dir=work_dir, fq_dir=fq_dir, ref_file=ref_file)
+    bam_list=["/home/zhaolab1/data/mitosra/rna/brenneri_males_cb2012/SRR580405_s.bam",
+    "/home/zhaolab1/data/mitosra/rna/brenneri_males_cb2012/SRR580404_s.bam",
+    "/home/zhaolab1/data/mitosra/rna/brenneri_males_cb2012/SRR580406_s.bam"]
+    wrapper_samtools_merge(work_dir, ref_file, bam_list)
+
+
+if __name__=="__main__":
+    __test_rna()
