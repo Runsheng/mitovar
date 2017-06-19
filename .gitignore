@@ -86,6 +86,8 @@ ENV/
 
 # Spyder project settings
 .spyderproject
+__collect.py
+
 
 # Rope project settings
 .ropeproject
@@ -341,3 +343,4 @@ local.properties
 
 # IDE files
 .idea/
+bins/mitfi/test/
