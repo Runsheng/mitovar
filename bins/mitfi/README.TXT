@@ -1,7 +1,9 @@
 Version 0.1 of MiTFi
 ------------------------
+This is a fork for MiTFi JAVA script. Using cmsearch from Infernal 1.0.2 for the tRNA prediction.
 
-The mitochondrial tRNA finder (MiTFi) script is a java script 
+------------------------
+The mitochondrial tRNA finder (MiTFi) script is a java script
 using the Infernal package* and several preprocessing steps to find 
 mitochondrial tRNA genes. All required covariance models and a file 
 defining the NCBI genetic codes** are attached. 

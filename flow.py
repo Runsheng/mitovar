@@ -15,6 +15,7 @@ import logging
 from glob import glob
 from utils import myglob, fasta2dic, dic2fasta
 
+
 # self-import
 from prep import fasta_shuffle
 from bait import *
@@ -23,7 +24,7 @@ from anno import exonerate_parser_write, exonerate_wrapper
 from post import scaf_filter
 
 
-def flow_bait(i, work_dir, fq_dict, ref_file, core=16):
+def flow_bait(i, work_dir, fq_dict, ref_file, core=32, min_seed_length=20, band_width=2000):
     """
     The flow for baiting,
     fq_dict is {lib1:[fq_1, fq_2], lib2:[fq_1]}
@@ -55,7 +56,8 @@ def flow_bait(i, work_dir, fq_dict, ref_file, core=16):
 
         out_bam=os.path.join(round_root_dir, k+".bam")
         fq_str=" ".join(v)
-        bwa_mem_wrapper(round_ref_file, fq_str, core=core, min_seed_length=20, band_width=2000, out=out_bam)
+        bwa_mem_wrapper(round_ref_file, fq_str, core=core,
+                        min_seed_length=min_seed_length, band_width=band_width, out=out_bam)
         bam_sorted=sort_index_wrapper(out_bam)
         names_set=get_name(bam_sorted)
 
@@ -122,7 +124,7 @@ def flow_chain_sra_scaf(spe, sra_list, ref_file, work_dir_root, sra_dir="", core
     return scaf_fasta, scaf_fastg
 
 
-def flow_chain_fq_first(spe, ref_file, work_dir_root, sra_dir="", core=16, i=0):
+def flow_chain_fq_first(spe, ref_file, work_dir_root, core=32, i=0, min_seed_length=50, band_width=2000):
 
     work_dir_spe=os.path.join(work_dir_root, spe)
     if os.path.exists(work_dir_spe):
@@ -134,7 +136,7 @@ def flow_chain_fq_first(spe, ref_file, work_dir_root, sra_dir="", core=16, i=0):
 
     fq_dict=get_fq_dict(workdir_fastq)
 
-    fq_out_dict=flow_bait(i, work_dir_spe, fq_dict, ref_file, core=core)
+    fq_out_dict=flow_bait(i, work_dir_spe, fq_dict, ref_file, core,min_seed_length,band_width)
     scaf_fasta, scaf_fastg=spades_wrapper(fq_name_dict=fq_out_dict, core=core, outdir="spades_out")
     return scaf_fasta, scaf_fastg
 
@@ -291,17 +293,63 @@ def pre_mapping_dir(i,work_dir=None,ref_file=None):
 
     return tmp_ref_dir
 
-
-if __name__=="__main__":
+class Test(object):
     def test_1_round0():
         i=0
         work_dir="/home/zhaolab1/data/mitosra/dna/mitovar_test"
         fq_dict={"ERR1018617":["/home/zhaolab1/data/mitosra/dna/onewkdir/1094327/fastq/ERR1018617_1.fastq",
-                 "/home/zhaolab1/data/mitosra/dna/onewkdir/1094327/fastq/ERR1018617_2.fastq"]}
+                               "/home/zhaolab1/data/mitosra/dna/onewkdir/1094327/fastq/ERR1018617_2.fastq"]}
         ref_file = "/home/zhaolab1/data/mitosra/dna/ref/celcbr.fa"
         flow_bait(i, work_dir, fq_dict, ref_file)
-    # test round1-9
-    spe="497829"
-    work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir/"
-    flow_chain_general(spe=spe, work_dir_root=work_dir_root, core=34, i_start=1, i_end=4)
+    # test round1-9\
+    def test19():
+        spe="497829"
+        work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir/"
+        flow_chain_general(spe=spe, work_dir_root=work_dir_root, core=34, i_start=1, i_end=4)
+
+    def re_run_sinica_454():
+        ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/all20.fasta"
+        spe="497829"
+        sra_list=["ERR138445.sra", "ERR138446.sra"]
+        work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir"
+        sra_dir="/home/zhaolab1/data/mitosra/sra/mitodna"
+        #flow_chain_sra_scaf(spe,sra_list, ref_file, work_dir_root, sra_dir,core=32, i=0)
+        flow_chain_fq_first(spe,ref_file,work_dir_root,core=50, i=0,min_seed_length=37, band_width=500)
+    def re_run_nigoni():
+        ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/all20.fasta"
+        spe="nigoni"
+        work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir"
+        flow_chain_fq_first(spe, ref_file, work_dir_root, core=32, i=0)
+
+    def re_run_sinica():
+        ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/all20.fasta"
+        spe="497829"
+        sra_list=["ERR688849.sra", "ERR688850.sra"]
+        work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir"
+        sra_dir="/home/zhaolab1/data/mitosra/sra/mitodna"
+        #flow_chain_sra_scaf(spe,sra_list, ref_file, work_dir_root, sra_dir,core=32, i=0)
+        flow_chain_fq_first(spe,ref_file,work_dir_root,core=50, i=0,min_seed_length=30, band_width=2000)
+
+    def run_hk104():
+        ref_file = "/home/zhaolab1/data/outer/cbstrains/briggsae.fasta"
+        work_dir_root="/home/zhaolab1/data/outer/cbstrains"
+        #sra_list=["SRR1056290.sra","SRR1056291.sra",
+        #          "SRR1056288.sra", "SRR1056289.sra"]
+        #sra_dir="/home/zhaolab1/ncbi/public/sra"0, i=0)
+
+        spe = "AF16"
+        # flow_chain_sra_scaf(spe,sra_list, ref_file, work_dir_root, sra_dir,core=5
+        flow_chain_fq_first(spe, ref_file, work_dir_root, core=50, i=0, min_seed_length=22, band_width=500)
+
+if __name__=="__main__":
+
+    def re_run_ctro():
+        ref_file="/home/zhaolab1/data/mitosra/rnaother/ref/all20.fasta"
+        spe="1561998"
+        sra_list=["SRR058599", "SRR058600", "SRR058601", "SRR058602", "SRR058603", "SRR058604", "SRR058605"]
+        work_dir_root="/home/zhaolab1/data/mitosra/dna/wkdir"
+        sra_dir="/home/zhaolab1/data/mitosra/sra/mitodna"
+        #flow_chain_sra_scaf(spe,sra_list, ref_file, work_dir_root, sra_dir,core=32, i=0)
+        flow_chain_fq_first(spe,ref_file,work_dir_root,core=50, i=0,min_seed_length=30, band_width=2000)
+    re_run_ctro()
 

@@ -536,8 +536,8 @@ def flow_tbl(fasta_order, cds_ref, r_ref, spe_name=None,MITFIPATH=None):
     return fsa_name, tbl_name
 
 if __name__=="__main__":
-    os.chdir("/home/zhaolab1/data/mitosra/dna/wkdir/1094320/round0")
+    os.chdir("/home/zhaolab1/data/mitosra/dna/wkdir/1561998")
     r_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
     cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
-    out=flow_re_order("1094320.fasta")
-    flow_tbl(out, cds_ref, r_ref, spe_name="Caenorhabditis sp.1")
+    out=flow_re_order("1561998.fasta")
+    flow_tbl(out, cds_ref, r_ref, spe_name="Caenorhabditis tropicalis")

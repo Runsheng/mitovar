@@ -75,16 +75,29 @@ def pre_fsa(fastafile, spe_name, out=None):
 
 if __name__=="__main__":
 
-    wkdir="/home/zhaolab1/data/mitosra/dna/wkdir/"
-    spe="281681"
-    work_dir_spe=os.path.join(wkdir, spe)
-    os.chdir(work_dir_spe)
-    fasta_d=scaf_filter("./round0/spades_out/scaffolds.fasta")
-    fastaname=spe+".fasta"
-    dic2fasta(fasta_d,fastaname)
+    def re_run_sinica():
 
-    spe_name="Caenorhabditis plicata"
-    rrna_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
-    cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
+        wkdir="/home/zhaolab1/data/mitosra/dna/wkdir/"
+        spe="281681"
+        work_dir_spe=os.path.join(wkdir, spe)
+        os.chdir(work_dir_spe)
+        fasta_d=scaf_filter("./round0/spades_out/scaffolds.fasta")
+        fastaname=spe+".fasta"
+        dic2fasta(fasta_d,fastaname)
 
-    print flow_submission(fastaname, rrna_ref, cds_ref, spe_name)
+        spe_name="Caenorhabditis plicata"
+        rrna_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
+        cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
+
+        print flow_submission(fastaname, rrna_ref, cds_ref, spe_name)
+
+    def re_run_sinica_2nd():
+        wkdir="/home/zhaolab1/data/mitosra/rnaother/sinica"
+        os.chdir(wkdir)
+        spe_name="Caenorhabditis sinica"
+        rrna_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/rrna.fasta"
+        cds_ref = "/home/zhaolab1/data/mitosra/dna/anno/exon/ref/celmt_p.fasta"
+        fastaname="sinica_withdloop.fa"
+        print flow_submission(fastaname, rrna_ref, cds_ref, spe_name)
+
+    re_run_sinica_2nd()

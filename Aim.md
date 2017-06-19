@@ -11,3 +11,4 @@ rRNAs and tRNAs. Highlight the Non-coding regions.
 
 1. Assemble the nulcear CDS sequences from the mix-stage RNA-seq data. Pick out
 The best-fit orthology from Illumina RNA-seq data.
+
