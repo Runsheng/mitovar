@@ -12,5 +12,12 @@
 1. Biopython
 2. pysam
 
+#### install dependencies 
+The easiest way to install all dependencies is conda throught bioconda.
+```
+conda install -c bioconda \
+    biopython pysam seqtk bwa infernal=1.0.2 spades 
+```
+
 #### optional packages
 1. fastq-dump (from sra-toolkit): if start from sra file other then fastq
