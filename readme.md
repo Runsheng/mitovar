@@ -19,7 +19,7 @@ git clone https://github.com/Runsheng/mitovar.git
 ```
 
 ##### Add mitovar.py to $PATH
-```
+```bash
 export PATH="mitovar_install_path":$PATH
 ```
 
@@ -35,8 +35,18 @@ fastq-dump (from sra-toolkit): if start from sra file other than fastq
 - assemble: assemble the mtDNA fasta file from a NGS fastq file and a nearby reference file
 
 
-A example for running annotation command:
-```
+A example to run annotation command:
+```bash
 mitovar.py anno -f mtDNA.fasta -c cel_p.fa -r cel_rrna.fa -s cel
+```
+
+A example to run assemble command:
+
+*Note: put all fastq files in ./{spe}/fastq, and run command in ./*
+
+*For example, the species name {spe} is cbr*
+
+*run the following command in /home/user, the fastq should be in /home/usr/cbr/fastq*
+```bash
 mitovar.py assemble -f cel.fa -p 32 -s cbr
 ```
