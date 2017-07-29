@@ -35,16 +35,16 @@ export PATH="mitovar_install_path":$PATH
 - assemble: assemble the mtDNA fasta file from a NGS fastq file and a nearby reference file
 
 
-A example to run annotation command:
+An example to run annotation command:
 ```bash
 mitovar.py anno -f mtDNA.fasta -c cel_p.fa -r cel_rrna.fa -s cel
 ```
 
-A example to run assemble command:
+An example to run assemble command:
 
 *Note: put all fastq files in ./{spe}/fastq, and run command in ./*
 
-*For example, the species name {spe} is cbr*
+*For instance, the species name {spe} is cbr*
 
 *run the following command in /home/user, the fastq should be in /home/usr/cbr/fastq*
 ```bash
