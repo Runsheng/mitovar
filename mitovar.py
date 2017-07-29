@@ -47,9 +47,12 @@ anno: annotate a mtDNA fasta sequences and generate a tbl file for genbank submi
 assemble: assemble the mtDNA fasta file from a NGS fastq file and a nearby reference file
 ------
 A example for running annotation command:
-mitovar anno -f mtDNA.fasta
+mitovar.py anno -f mtDNA.fasta -c cel_p.fa -r cel_rrna.fa -s cel
+mitovar.py assemble -f cel.fa -p 32 -s cbr
+
+
             """,
-            formatter_class = argparse.RawTextHelpFormatter)
+            formatter_class = argparse.RawDescriptionHelpFormatter)
         parser.add_argument("command", help="Subcommand to run")
         args=parser.parse_args(sys.argv[1:2])
         if not hasattr(self, args.command):
@@ -66,13 +69,12 @@ mitovar anno -f mtDNA.fasta
 
 
         parser.add_argument("-d", "--wkdir", default=os.getcwd(),
-                            help="the working dir, if not give, set to current dir")
+                            help="the working dir, default is the current dir")
         parser.add_argument("-f", "--fasta", help="fasta to be annotated")
         parser.add_argument("-c", "--cds_ref",
                             help="cds sequences and/or protein sequences from one closest seed mtDNA")
         parser.add_argument("-r", "--rrna_ref", help="rrna sequences from one closest seed mtDNA")
-        parser.add_argument("-p", "--spe", default="un", help="the species name, if not give, set to un")
-
+        parser.add_argument("-s", "--spe", default="un", help="the species name, if not give, set to un")
 
 
         args = parser.parse_args(sys.argv[2:])
@@ -80,34 +82,34 @@ mitovar anno -f mtDNA.fasta
         flow_anno(wkdir=args.wkdir, fasta=args.fasta, cds_ref=args.cds_ref,
               rrna_ref=args.rrna_ref, spe_name=args.spe)
 
-
     def assemble(self):
-        pass
+        parser=argparse.ArgumentParser(
+            description="The command to get mtDNA aseembly from fastq NGS reads and a nearby reference, "
+                        "please put a ./{spe}/fastq folder containing all fastq file inside the wkdir,"
+                        "for example, you wkdir is /home and your spe is cbr, then put fastq files to"
+                        "/home/cbr/fastq"
+                        "the fastq files with the same prefix before _ will be treated as pair-end automatically, "
+                        "such as SRR1_F.fq and SRR2_R.fq,"
+                        "support at most 9 separated fastq pairs."
+        )
 
 
+        parser.add_argument("-d", "--wkdir", default=os.getcwd(),
+                            help="the working dir, default is the current dir")
+        parser.add_argument("-f", "--fasta", help="reference fasta file used to bait reads from NGS reads")
+        parser.add_argument("-p", "--core", default=4, help="cores used to run mapping and assembly")
+        parser.add_argument("-s", "--spe", default="un", help="the species name, if not give, set to un")
 
-def __main():
-    print("---The cmd wrapper for mitovar package---")
-    parent_parser=argparse.ArgumentParser(prog="mitovar")
-    parent_parser.add_argument("--version", action="store_true", help="mitovar version 0.0.99")
 
-    parser = argparse.ArgumentParser(add_help=False)
-    subparsers= parent_parser.add_subparsers(help=False)
+        args = parser.parse_args(sys.argv[2:])
 
-    parser_anno= subparsers.add_parser("anno",  parents=[parent_parser])
+        if "fastq" not in os.listdir(args.wkdir+"/"+args.spe):
+            print("Please put all fastq files in the ./fastq forlder inside the species wkdir,"
+                  "for example, you wkdir is /home and your spe is cbr, then put fastq files to"
+                  "/home/cbr/fastq")
+            exit(1)
 
-    parser_anno.add_argument("-d", "--wkdir", default=os.getcwd(),
-                             help="the working dir, if not give, set to current dir")
-    parser_anno.add_argument("-f","--fasta", help="fasta to be annotated")
-    parser_anno.add_argument("-c","--cds_ref",
-                             help="cds sequences and/or protein sequences from one closest seed mtDNA")
-    parser_anno.add_argument("-r", "--rrna_ref", help="rrna sequences from one closest seed mtDNA")
-    parser_anno.add_argument("-p", "--spe", default="un", help="the species name, if not give, set to un")
-
-    args=parser.parse_args()
-    #args= parser_anno.parse_args()
-    flow_anno(wkdir=args.wkdir, fasta=args.fasta, cds_ref=args.cds_ref,
-              rrna_ref=args.rrna_ref, spe_name=args.spe)
+        flow_chain_fq_first(args.spe,args.fasta,args.wkdir,args.core,i=0,min_seed_length=50, band_width=2000)
 
 
 
