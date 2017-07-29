@@ -50,7 +50,7 @@ A example for running annotation command:
 mitovar.py anno -f mtDNA.fasta -c cel_p.fa -r cel_rrna.fa -s cel
 mitovar.py assemble -f cel.fa -p 32 -s cbr
 
-
+version 0.0.99
             """,
             formatter_class = argparse.RawDescriptionHelpFormatter)
         parser.add_argument("command", help="Subcommand to run")
