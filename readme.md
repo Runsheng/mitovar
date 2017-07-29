@@ -25,7 +25,7 @@ export PATH="mitovar_install_path":$PATH
 
 
 ##### Optional 
-fastq-dump (from sra-toolkit): if start from sra file other then fastq
+fastq-dump (from sra-toolkit): if start from sra file other than fastq
 
 
 ### Run commands
