@@ -98,7 +98,7 @@ version 0.0.99
                             help="the working dir, default is the current dir")
         parser.add_argument("-f", "--fasta", help="reference fasta file used to bait reads from NGS reads")
         parser.add_argument("-p", "--core", default=4, help="cores used to run mapping and assembly")
-        parser.add_argument("-s", "--spe", default="un", help="the species name, if not give, set to un")
+        parser.add_argument("-s", "--spe", default="new", help="the species name, if not give, set to new")
 
 
         args = parser.parse_args(sys.argv[2:])
