@@ -9,6 +9,7 @@ rRNAs and tRNAs. Highlight the Non-coding regions.
 
 ### For nuclear-encoded (mt)genes
 
-1. Assemble the nulcear CDS sequences from the mix-stage RNA-seq data. Pick out
+1. Assemble the nuclear CDS sequences from the mix-stage RNA-seq data. Pick out
 The best-fit orthology from Illumina RNA-seq data.
 
+2. The nuclear-encoded (mt)genes are fetched as

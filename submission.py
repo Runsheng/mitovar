@@ -75,6 +75,7 @@ def pre_fsa(fastafile, spe_name, out=None):
 
 if __name__=="__main__":
 
+    # exam of the sinica
     def re_run_sinica():
 
         wkdir="/home/zhaolab1/data/mitosra/dna/wkdir/"
@@ -100,4 +101,4 @@ if __name__=="__main__":
         fastaname="sinica_withdloop.fa"
         print flow_submission(fastaname, rrna_ref, cds_ref, spe_name)
 
-    re_run_sinica_2nd()
+    pass
