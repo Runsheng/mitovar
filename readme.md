@@ -26,7 +26,7 @@ export PATH="mitovar_install_path":$PATH
 
 ##### Optional 
 - fastq-dump (from sra-toolkit): if start from sra file other than fastq
-- The pre-compiled exonrate only works on Linux x64 system, tested in Ubuntu 16.04, 14.04 and centOS 7.
+- The pre-compiled exonerate only works on Linux x64 system, tested in Ubuntu 16.04, 14.04 and CentOS 7.
 
 ### Run commands
 
