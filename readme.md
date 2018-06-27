@@ -37,7 +37,11 @@ export PATH="mitovar_install_path":$PATH
 
 An example to run annotation command:
 ```bash
-mitovar.py anno -f mtDNA.fasta -c cel_p.fa -r cel_rrna.fa -s cel
+mitovar.py anno -f mtDNA.fasta -c protein.fasta -r rrna.fasta -s name
+```
+Or you can use the test file inside the test folder to make a testrun:
+```bash
+mitovar.py anno -f 1561998.fasta -c celmt_p.fasta -r rrna.fasta -s ctro
 ```
 
 An example to run assemble command:
