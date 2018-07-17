@@ -10,6 +10,7 @@ import signal
 import os
 import fnmatch
 import multiprocessing
+import unittest
 
 from Bio import SeqIO
 
@@ -127,3 +128,17 @@ def fun(f, q_in, q_out):
         if i is None:
             break
         q_out.put((i, f(x)))
+
+
+class TestUtils(unittest.TestCase):
+        def SetUp(self):
+            pass
+        def TearDown(self):
+            pass
+
+        def test_myexe(self):
+            out = myexe("ls")
+            self.assertIn("utils.py", out)
+
+if __name__=="__main__":
+    unittest.main()
