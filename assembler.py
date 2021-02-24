@@ -48,7 +48,7 @@ def spades_wrapper(fq_name_dict, outdir="spades_out", core=12, rna_model=False):
         fq_str=" ".join(fq_str_list)
 
     spades_bin="rnaspades.py" if rna_model else "spades.py"
-    spades_cmd="{spades_bin} --only-assembler -t {core} {readpool} -o {outdir}".format(
+    spades_cmd="{spades_bin} -t {core} {readpool} -o {outdir}".format(
                     spades_bin=spades_bin, core=core, readpool=fq_str, outdir=outdir)
     print(spades_cmd)
     print(myexe(spades_cmd))
