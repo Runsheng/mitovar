@@ -22,7 +22,8 @@ def spades_wrapper(fq_name_dict, outdir="spades_out", core=12, rna_model=False):
     fq_str_list=[]
     # to generate the readpool string used for spades
     lib_num=1
-    for k, v in fq_name_dict.iteritems():
+    for k in sorted(fq_name_dict.keys()):
+        v=fq_name_dict[k]
         read_type="pe" if len(v)>=2 else "s"
         for fq_one_name in v:
             if read_type=="s":
