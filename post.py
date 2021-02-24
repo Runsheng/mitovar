@@ -14,6 +14,7 @@ from bait import get_fq_dict # use this will get muti-use
 import os
 from bait import *
 
+
 def scaf_name_parse(name):
     """
     ">NODE_1_length_13188_cov_721.856"

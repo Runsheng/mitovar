@@ -36,8 +36,6 @@ def flow_tbl(work_dir, r_ref, cds_ref, MITHIPATH=None):
         with open(prefix+".tbl", "w") as fw:
             fw.write("".join(tbl_out))
 
-
-
 def flow_tbl_one(fastafile, r_ref, cds_ref, work_dir=None, MITHIPATH=None):
 
     wkdir = "/home/zhaolab1/data/mitosra/dna/anno/trna"
@@ -67,7 +65,6 @@ def flow_tbl_one(fastafile, r_ref, cds_ref, work_dir=None, MITHIPATH=None):
 
         with open(prefix+".tbl", "w") as fw:
             fw.write("".join(tbl_out))
-
 
 
 def pre_submission():

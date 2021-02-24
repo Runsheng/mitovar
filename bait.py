@@ -53,7 +53,7 @@ def get_fq_dict(workdir_fastq):
     return fq_dict
 
 
-def bwa_mem_wrapper(ref_file, fq_str, core=25, min_seed_length=20, band_width=2000, out="mapped.bam"):
+def bwa_mem_wrapper(ref_file, fq_str, core=25, min_seed_length=11, band_width=2000, out="mapped.bam"):
     """
     a bwa mem mapper only collect the mapped reads
     :param ref_file:

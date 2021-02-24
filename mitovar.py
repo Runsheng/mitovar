@@ -61,12 +61,10 @@ version 0.0.99
             exit(1)
         getattr(self, args.command)()
 
-
     def anno(self):
         parser=argparse.ArgumentParser(
             description="The command to annotate the mtDNA fasta file"
         )
-
 
         parser.add_argument("-d", "--wkdir", default=os.getcwd(),
                             help="the working dir, default is the current dir")
@@ -74,7 +72,7 @@ version 0.0.99
         parser.add_argument("-c", "--cds_ref",
                             help="cds sequences and/or protein sequences from one closest seed mtDNA")
         parser.add_argument("-r", "--rrna_ref", help="rrna sequences from one closest seed mtDNA")
-        parser.add_argument("-s", "--spe", default="un", help="the species name, if not give, set to un")
+        parser.add_argument("-s", "--spe", default="un", help="the species name, if not given, set to un")
 
 
         args = parser.parse_args(sys.argv[2:])
@@ -99,7 +97,7 @@ version 0.0.99
         parser.add_argument("-f", "--fasta", help="reference fasta file used to bait reads from NGS reads")
         parser.add_argument("-p", "--core", default=4, help="cores used to run mapping and assembly")
         parser.add_argument("-s", "--spe", default="new", help="the species name, if not give, set to new")
-
+        parser.add_argument("-k", "--seed", default=20, help="min seed length used to bait the read, if not given, set to 20")
 
         args = parser.parse_args(sys.argv[2:])
 
@@ -109,7 +107,7 @@ version 0.0.99
                   "/home/cbr/fastq")
             exit(1)
 
-        flow_chain_fq_first(args.spe,args.fasta,args.wkdir,args.core,i=0,min_seed_length=50, band_width=2000)
+        flow_chain_fq_first(args.spe,args.fasta,args.wkdir,args.core,i=0,min_seed_length=args.seed, band_width=2000)
 
 
 

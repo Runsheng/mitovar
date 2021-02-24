@@ -52,7 +52,7 @@ def flow_bait(i, work_dir, fq_dict, ref_file, core=32, min_seed_length=20, band_
     bwa_index_wrapper(round_ref_file)
 
     fqout_dict={} # a dict with {prefix1:[read1, read2, read3], prefix2:[read1]},
-    for k, v in fq_dict.iteritems():
+    for k, v in fq_dict.items():
 
         out_bam=os.path.join(round_root_dir, k+".bam")
         fq_str=" ".join(v)
@@ -152,7 +152,8 @@ def pre_ref_first(store_dir, ref_file=None):
     os.chdir(store_dir)
 
     ref_first=os.path.join(store_dir, "round0.fasta")
-    
+    ref_name=""
+
     if ref_file==None:
         print("No ref file provided, enter de novo mode, this may take a long time to finish.")
     else:

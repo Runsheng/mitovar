@@ -328,6 +328,11 @@ def tbl_format(bed4_rrna, bed4_cds, bed4_trna):
 
     bedall=sorted(bed4_rrna+bed4_cds+bed4_trna)
 
+    ####todo: add the position for the non-coding region as NCR, cutoff =gap>20
+    ####
+
+    ####
+
     out_l=[]
 
     for line in bedall:
