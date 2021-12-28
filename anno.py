@@ -70,17 +70,16 @@ def exonerate_parser(exonerate_file):
     bed4=[]
 
     texts=SearchIO.parse(StringIO(exonerate_file), format="exonerate-text")
-    for record in texts:
-        for hsp in record:
-            for s in hsp:
-                # the biopython.SearchIO interval is 0 based [start, end), so start+1, end+0 to get 1 based coords
-                table_4=[s.fragment.query_id, s.fragment.query_start+1, s.fragment.query_end,s.fragment.hit_id]
-                bed4.append(table_4)
-
-                #fw.write("\t".join(table_4))
-                #fw.write("\n")
+    try:
+        for record in texts:
+            for hsp in record:
+                for s in hsp:
+                    # the biopython.SearchIO interval is 0 based [start, end), so start+1, end+0 to get 1 based coords
+                    table_4=[s.fragment.query_id, s.fragment.query_start+1, s.fragment.query_end,s.fragment.hit_id]
+                    bed4.append(table_4)
+    except ValueError as e:
+        pass
     bed4.sort()
-    #fw.close()
     return bed4
 
 
@@ -378,7 +377,7 @@ def _cmsearch_wrapper_rrna(fastafile, MITFIPATH=None):
     mitfi_cmd = "java -jar {jarfile} -cm {rrna_cm} -top {fastafile}".format(
         jarfile=jarfile, fastafile=fastafile, rrna_cm=rrna_cm)
     rrna_out = myexe(mitfi_cmd)
-    print rrna_out
+    print(rrna_out)
     prefix=fastafile.split("/")[-1].split(".")[0]
     with open(prefix+"_rrna.txt", "w") as fw:
         fw.write(rrna_out)
@@ -448,7 +447,7 @@ def re_order(fastafile,newstart,strand="+",outfasta=None):
         newstart=len(seq)-newstart+1
         seq=seq.reverse_complement()
         fasta_d={chro:seq}
-        print newstart
+        print(newstart)
 
     frg_1=chr_select(record_dict=fasta_d, chro=chro, start=newstart-1, end=len(seq))[1]
     frg_2=chr_select(record_dict=fasta_d, chro=chro, start=0, end=newstart-1)[1]
