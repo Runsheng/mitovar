@@ -29,7 +29,7 @@ def myexe(cmd, timeout=0):
     proc=subprocess.Popen(cmd, shell=True, preexec_fn=setupAlarm,
                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd=os.getcwd())
     out, err=proc.communicate()
-    print err, "Run finished with return code:", proc.returncode
+    print (err, "Run finished with return code:", proc.returncode)
     return out
 
 
